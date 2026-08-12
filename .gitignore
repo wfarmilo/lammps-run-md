@@ -1,0 +1,10 @@
+#Output folders
+*out*
+Data/
+
+#LAMMPS dumps
+*.dump
+
+#Archer2 export/import files
+push-archer2.sh
+pull-archer2.sh
