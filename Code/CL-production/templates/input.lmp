@@ -1,0 +1,51 @@
+# LAMMPS file (copied from XRA and DWL)
+
+atom_modify   map yes
+units       metal
+dimension   3
+boundary    p p p
+atom_style    atomic
+atom_modify   map yes
+
+newton        on
+
+read_data   ./initconf.data
+
+#Force field params
+pair_style    symmetrix/mace
+pair_coeff    * * ../ch2o-dens-inv_swa-1-8.json H O
+
+variable t equal step
+########### grouping for fixing constraints #############
+group other_ats id 1:8640
+group water_ats id 8641:22680
+#fix fix_at1 layerone_at setforce 0.0 0.0 0.0 # fix x y dims
+#fix fix_at2 layertwo_at setforce 0.0 0.0 NULL  # fix x y z dims
+#fix fix_other_ats other_ats setforce 0.0 0.0 0.0 # fix z dims
+velocity      water_ats create 300.0 3928359 rot no dist gaussian
+thermo_style custom time step temp press vol density pe ke etotal enthalpy fmax fnorm
+thermo_modify flush yes
+thermo 10
+restart 1000 run1.restart
+######### NVT equilibration #############
+log nvt_equi.log
+dump unwrapped all dcd 100 nvt_equi_unwrapped_$t.dcd
+dump_modify unwrapped unwrap yes
+timestep 0.001
+fix NVT1 all nvt temp 300 300 0.1
+run 40000 # 20 ps equilibration
+write_restart nvt_equi.restart.*
+write_data nvt_equi.data.*
+unfix NVT1
+#unfix fix_other_ats
+undump unwrapped
+reset_timestep 0
+########## NVT production #############
+log nvt_prod.log
+dump unwrapped all dcd 4 nvt_prod_unwrapped_$t.dcd
+dump_modify unwrapped unwrap yes
+timestep 0.001
+fix NVT3 all nvt temp 300 300 0.1
+run 100000 upto # 50 ps production
+write_restart nvt_prod.restart.*
+write_data nvt_prod.data.*
