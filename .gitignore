@@ -5,6 +5,9 @@ Data/
 #LAMMPS dumps
 *.dump
 
+#Model json file
+ch2o-dens-inv_swa-1-8.json
+
 #Archer2 export/import files
 push-archer2.sh
 pull-archer2.sh
