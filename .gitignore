@@ -5,6 +5,9 @@ Data/
 #LAMMPS dumps
 *.dump
 
+#Model file
+*.json
+
 #Archer2 export/import files
 push-archer2.sh
 pull-archer2.sh
