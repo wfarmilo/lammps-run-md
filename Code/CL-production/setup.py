@@ -42,7 +42,7 @@ for rt in runtypes:
             #Check that the output directory is linked up
             link_dir = data_dir / f"out/CL-production-out/{runlabel}"
 
-            if not(link_dir.exists(follow_symlinks=False)):
+            if not(link_dir.is_symlink()):
                 #Symlink output directory to pair in Data/out/CL-production-out
                 os.symlink(workdir, link_dir, target_is_directory=True)
 
