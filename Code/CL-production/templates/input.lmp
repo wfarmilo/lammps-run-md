@@ -1,51 +1,69 @@
-# LAMMPS file (copied from XRA and DWL)
+# LAMMPS file (modified from XRA and DWL- annotated by WAF)
 
-atom_modify   map yes
-units       metal
-dimension   3
-boundary    p p p
-atom_style    atomic
-atom_modify   map yes
+###### Let us know what is happening ######
+log log-XXXOUTPREFXXX.lammps  #Redirects default log.lammps to file of our choosing
 
-newton        on
+########## Set up simulation box ##########
+units       metal       # Define default units we are using (grams/mole, angstroms, ps, eV, K, bar, etc.)
+dimension   3           # Dimensionality of the system
+boundary    p p p       # Periodic boundaries in all 3 dimensions
+atom_style    atomic    # Style of atom data, "atomic" means we only have atom id, atom type, xyz position, and masses (no charges, molecules or bonds)
+atom_modify   map yes   # Save a lookup table for atom IDs
 
-read_data   ./initconf.data
+newton        on        # Use newton's 3rd law to save compute (Fij = - Fji)
 
-#Force field params
-pair_style    symmetrix/mace
-pair_coeff    * * ../ch2o-dens-inv_swa-1-8.json H O
+read_data   ./initconf.data     # Read in configuration from input file (MUST be LAMMPS data format, and contain masses)
 
-variable t equal step
-########### grouping for fixing constraints #############
-group other_ats id 1:8640
-group water_ats id 8641:22680
-#fix fix_at1 layerone_at setforce 0.0 0.0 0.0 # fix x y dims
-#fix fix_at2 layertwo_at setforce 0.0 0.0 NULL  # fix x y z dims
-#fix fix_other_ats other_ats setforce 0.0 0.0 0.0 # fix z dims
-velocity      water_ats create 300.0 3928359 rot no dist gaussian
-thermo_style custom time step temp press vol density pe ke etotal enthalpy fmax fnorm
-thermo_modify flush yes
-thermo 10
-restart 1000 run1.restart
-######### NVT equilibration #############
-log nvt_equi.log
-dump unwrapped all dcd 100 nvt_equi_unwrapped_$t.dcd
-dump_modify unwrapped unwrap yes
-timestep 0.001
-fix NVT1 all nvt temp 300 300 0.1
-run 40000 # 20 ps equilibration
-write_restart nvt_equi.restart.*
-write_data nvt_equi.data.*
-unfix NVT1
-#unfix fix_other_ats
-undump unwrapped
-reset_timestep 0
-########## NVT production #############
-log nvt_prod.log
-dump unwrapped all dcd 4 nvt_prod_unwrapped_$t.dcd
-dump_modify unwrapped unwrap yes
-timestep 0.001
-fix NVT3 all nvt temp 300 300 0.1
-run 100000 upto # 50 ps production
-write_restart nvt_prod.restart.*
-write_data nvt_prod.data.*
+########### Set up force field ############
+pair_style    symmetrix/mace            # Style of model we are using
+pair_coeff    * * XXXMODELPATHXXX H O   # Assign atom type 1 to H and 2 to O, then use coefficients from symmetrix .json output
+
+########## Set up run parameters ###########
+timestep 0.0005         # Timestep between simulation frames (NOTE: units metal -> this is in ps)
+
+# Initialize velocity distribution
+velocity all create XXXTEMPXXX 31415 dist gaussian      # NOTE: will by default set the linear COM momentum to 0 (mom yes)
+
+    # velocity TARGET create TEMP SEED dist DISTRIBUTION
+    # TARGET: which group to apply the velocity to
+    # create: tells you to create a new velocity distribution
+    # TEMP: corresponding temperature for this velocity
+    # SEED: seed for random number generator they use
+    # dist: flag for lammps to provide a custom distribution (default is uniform)
+    # DISTRIBUTION: the type of distribution you want (here we use a gaussian)
+
+# Create NVT thermostat
+fix NVT1 all nvt temp XXXTEMPXXX XXXTEMPXXX 0.05
+
+    # fix LABEL TARGET nvt temp TSTART TFINAL TDAMP
+    # LABEL: internal name for this fix
+    # TARGET: which group to perform the fix on
+    # nvt: the thermostat to use, here using Nose-Hoover chain (default chain length tchain 3)
+    # temp: flag that tells LAMMPS you are providing temperature arguments
+    # TSTART: initial temperature (units metal -> K)
+    # TFINAL: final temperature (units metal -> K)
+    # TDAMP: the thermostap damping temperature (generally 100xtimestep, again, this will be in ps)
+
+############## File outputs ###############
+
+#Open stream for trajectory output
+dump DUMP1 all dcd XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.dcd
+
+    # dump LABEL TARGET FILETYPE STEPSIZE FILENAME
+    # LABEL: internal name for this dump
+    # TARGET: which group to perform the dump on
+    # FILETYPE: type of file to output (here .dcd)
+    # STEPSIZE: the frequency of dumps, expressed in frames
+    # FILENAME: the output name for the dump file
+
+# Unwrap trajectory- so that particles are not confined to the periodic cell (for diffusion)
+dump_modify DUMP1 unwrap yes
+
+# Checkpoint data throughout the simulation (cycles between a and b in case of mid-write crash)
+restart 50000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart
+
+# Run simulation- run NFRAMES (here should be 500ps worth)
+run 1000000
+
+# Save final restart file to continue simulation if desired
+write_restart final-XXXOUTPREFXXX.*.restart     
