@@ -10,7 +10,7 @@ temp=$2
 pitype=$3
 nbeads=$4
 
-runpref="${pitype}-P${nbeads}-T${temp}"
+runpref="${pitype}-T${temp}-P${nbeads}"
 folder="${dftype}-P${nbeads}-00"
 echo "Running ${runpref} from ${folder}"
 
