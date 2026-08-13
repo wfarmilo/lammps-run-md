@@ -52,7 +52,7 @@ for rt in runtypes:
                 os.symlink(workdir, link_dir, target_is_directory=True)
 
         #Get pdb file
-        pdbin = data_dir /  f"input-pdb/{runlabel}.pdb"
+        pdbin = data_dir /  f"input-pdb/{rt}-{rn:02d}.pdb"
 
         #Read in pdb file
         atoms = aread(pdbin)
