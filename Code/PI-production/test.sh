@@ -7,8 +7,9 @@ execdir=$(realpath "./")
 
 pitype=$1
 temp=$2
+nbeads=$3
 
-runpref="${pitype}-T${temp}"
+runpref="${pitype}-P${nbeads}-T${temp}"
 echo "Running ${runpref}"
 
 
