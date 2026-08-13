@@ -3,8 +3,8 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("temp", help = "Simulation temperature", type = int)
-parser.add_argument("bead-count", help = "Number of PIMD beads", type = str)
-parser.add_argument("ipi-type", help = "Style of PIMD", type = str)
+parser.add_argument("bead_count", help = "Number of PIMD beads", type = str)
+parser.add_argument("ipi_type", help = "Style of PIMD", type = str)
 
 args=parser.parse_args()
 
