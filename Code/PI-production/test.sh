@@ -5,16 +5,18 @@ cd ../../Code/PI-production || exit 1
 execdir=$(realpath "./")
 
 
-pitype=$1
+dftype=$1
 temp=$2
-nbeads=$3
+pitype=$3
+nbeads=$4
 
 runpref="${pitype}-P${nbeads}-T${temp}"
-echo "Running ${runpref}"
+folder="${dftype}-P${nbeads}-00"
+echo "Running ${runpref} from ${folder}"
 
 
 # Change to work directory
-workdir=$(realpath "./out/${runpref}/")
+workdir=$(realpath "./out/${dftype}/")
 
 cd $workdir || exit 1
 
