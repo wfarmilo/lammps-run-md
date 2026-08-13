@@ -3,6 +3,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("temp", help = "Simulation temperature", type = int)
+parser.add_argument("bead-count", help = "Number of PIMD beads", type = str)
 parser.add_argument("ipi-type", help = "Style of PIMD", type = str)
 
 args=parser.parse_args()
@@ -16,10 +17,12 @@ from ase.io import read as aread, write as awrite
 runtypes = ['p0m1', 'p1m0', 'p1m1']
 run_nums = np.arange(5)
 
-step_size = 16   #4fs between frames
+step_size = 16      # 4fs between frames
+Nt = 1000000        # 500ps of data
 temperature = args.temp
 pimd_type = args.ipi_type
-outprefix = f'{pimd_type}-T{temperature}'
+P = args.bead_count
+outprefix = f'{pimd_type}-T{temperature}-P{P}'
 
 cwd = Path("./").resolve()
 assert cwd.name == "PI-production", f"Wrong directory: {str(cwd)}"
@@ -32,7 +35,7 @@ for rt in runtypes:
     for rn in run_nums:
 
         #Label for this run
-        runlabel = f"{rt}-{rn:02d}"
+        runlabel = f"{rt}-P{P}-{rn:02d}"
 
         #Make output directory (if necessary)
         workdir = cwd /  f"out/{runlabel}"
@@ -79,6 +82,7 @@ for rt in runtypes:
             #Global
             inptext[ini] = inptext[ini].replace(f"XXXTEMPXXX", f"{temperature}")
             inptext[ini] = inptext[ini].replace(f"XXXOUTPREFXXX", outprefix)
+            inptext[ini] = inptext[ini].replace(f"XXXNSTEPSXXX", f"{Nt}")
 
             #LAMMPS input file
             inptext[ini] = inptext[ini].replace(f"XXXSTEPSIZEXXX", f"{step_size}")
@@ -88,6 +92,7 @@ for rt in runtypes:
             inptext[ini] = inptext[ini].replace(f"XXXPROPSTRIDEXXX", f"{100*step_size}")
             inptext[ini] = inptext[ini].replace(f"XXXTRAJSTRIDEXXX", f"{step_size}")
             inptext[ini] = inptext[ini].replace(f"XXXCHECKPTSTRIDEXXX", f"{step_size}")
+            inptext[ini] = inptext[ini].replace(f"XXXNBEADSXXX", f"{step_size}")
 
         #Save lammps input
         lammps_inp_out = workdir / f"input-{outprefix}.lmp"
