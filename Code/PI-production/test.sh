@@ -16,7 +16,7 @@ echo "Running ${runpref} from ${folder}"
 
 
 # Change to work directory
-workdir=$(realpath "./out/${dftype}/")
+workdir=$(realpath "./out/${folder}/")
 
 cd $workdir || exit 1
 
