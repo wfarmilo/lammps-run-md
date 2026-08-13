@@ -1,0 +1,100 @@
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("temp", help = "Simulation temperature", type = int)
+parser.add_argument("ipi-type", help = "Style of PIMD", type = str)
+
+args=parser.parse_args()
+
+import os
+from pathlib import Path
+import numpy as np
+from ase.io import read as aread, write as awrite
+
+#Run parameters
+runtypes = ['p0m1', 'p1m0', 'p1m1']
+run_nums = np.arange(5)
+
+step_size = 16   #4fs between frames
+temperature = args.temp
+pimd_type = args.ipi_type
+outprefix = f'{pimd_type}-T{temperature}'
+
+cwd = Path("./").resolve()
+assert cwd.name == "PI-production", f"Wrong directory: {str(cwd)}"
+data_dir = cwd.parents[1] /"Data"
+templates_dir = cwd / "templates"
+
+#Set up output directories for classical production run
+
+for rt in runtypes:
+    for rn in run_nums:
+
+        #Label for this run
+        runlabel = f"{rt}-{rn:02d}"
+
+        #Make output directory (if necessary)
+        workdir = cwd /  f"out/{runlabel}"
+
+        if not(workdir.exists()):
+            workdir.mkdir()
+            workdir.chmod(0o755)
+
+            #Check that the output directory is linked up
+            link_dir = data_dir / f"out/PI-production-out/{runlabel}"
+
+            if not(link_dir.is_symlink()):
+                #Symlink output directory to pair in Data/out/PI-production-out
+                os.symlink(workdir, link_dir, target_is_directory=True)
+
+        #Get pdb file
+        pdbin = data_dir /  f"input-pdb/{runlabel}.pdb"
+
+        #Read in pdb file
+        atoms = aread(pdbin)
+
+        #Output in lammps form
+        awrite(workdir / "initconf.data", 
+               atoms, 
+               format = "lammps-data", 
+               atom_style = "atomic", 
+               specorder = ["H", "O"], 
+               masses = True)
+
+        #Get lammps input
+        lammps_inp = templates_dir / "input.lmp"
+
+        #Get ipi input
+        ipi_inp = templates_dir / f"{pimd_type}.xml"
+
+        edit_inputs = [lammps_inp, ipi_inp]
+        inptext = ['', '']
+        for ini, inp in enumerate(edit_inputs):
+            with open(inp, "r") as ii:
+                inptext[ini] = ii.read()
+
+            #Swap out placeholders
+
+            #Global
+            inptext[ini] = inptext[ini].replace(f"XXXTEMPXXX", f"{temperature}")
+            inptext[ini] = inptext[ini].replace(f"XXXOUTPREFXXX", outprefix)
+
+            #LAMMPS input file
+            inptext[ini] = inptext[ini].replace(f"XXXSTEPSIZEXXX", f"{step_size}")
+            inptext[ini] = inptext[ini].replace(f"XXXMODELPATHXXX", str(templates_dir / "ch2o-dens-inv_swa-1-8.json"))
+
+            #ipi input file
+            inptext[ini] = inptext[ini].replace(f"XXXPROPSTRIDEXXX", f"{100*step_size}")
+            inptext[ini] = inptext[ini].replace(f"XXXTRAJSTRIDEXXX", f"{step_size}")
+            inptext[ini] = inptext[ini].replace(f"XXXCHECKPTSTRIDEXXX", f"{step_size}")
+
+        #Save lammps input
+        lammps_inp_out = workdir / f"input-{outprefix}.lmp"
+        with open(lammps_inp_out, "w") as lio:
+            lio.write(inptext[0])
+
+        #Save ipi input
+        ipi_inp_out = workdir / f"input-{outprefix}.xml"
+        with open(ipi_inp_out, "w") as iio:
+            iio.write(inptext[1])

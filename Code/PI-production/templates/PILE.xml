@@ -1,0 +1,39 @@
+<simulation verbosity='high'>
+  <output prefix='XXXOUTPREFXXX'>
+    <!-- Select the properties and trajectories of your liking. If you want the same units as in ASE, just specify  {ase}. -->  
+    <properties filename='out' stride='XXXPROPSTRIDEXXX'>  [ step, time{picosecond}, conserved{electronvolt}, temperature{kelvin}, kinetic_cv{electronvolt}, potential{electronvolt}] </properties>
+    <trajectory filename='pos' stride='XXXTRAJSTRIDEXXX' format='ase'> positions </trajectory>
+    <trajectory filename='cent' stride='XXXTRAJSTRIDEXXX'> x_centroid{angstrom} </trajectory>
+    <checkpoint stride='XXXCHECKPTSTRIDEXXX'/>
+  </output>
+  <total_steps>XXXNSTEPSXXX</total_steps>
+  <ffsocket name='lammps' mode='inet' pbc='True' matching='any'>
+      <address> XXXNIDXXX </address>
+      <port> 31415 </port>
+      <latency> 1e-4 </latency>
+  </ffsocket>
+  <system>
+    <!-- nbeads scaled to 300K => 32 beads -->
+    <initialize nbeads='XXXNBEADSXXX'>
+      <file mode='pdb'> XXXFILEINXXX </file>
+      <velocities mode='thermal' units='kelvin'> XXXTEMPXXX </velocities>
+    </initialize>
+    <forces>
+      <force forcefield='lammps'> </force>
+    </forces>
+    <motion mode='dynamics'>
+      <dynamics mode='nvt'>
+        <thermostat mode='pile_g'>
+          <!-- We want large tau here to decouple the centroid from our thermostat -->
+          <tau units='femtosecond'> 500 </tau>
+          <pile_lambda> 0.5 </pile_lambda>
+        </thermostat>
+        <!-- Change as per your system  -->  
+        <timestep units='femtosecond'> 0.25 </timestep>
+      </dynamics>
+    </motion>
+    <ensemble>
+      <temperature units='kelvin'> XXXTEMPXXX </temperature>
+    </ensemble>
+  </system>
+</simulation>
