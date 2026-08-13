@@ -21,6 +21,9 @@ source "${WORKDIR}/.venv/bin/activate"
 # Get LAMMPS executable
 LAMMPS="${WORKDIR}/symmetrix-lammps/lammps/build/lmp"
 
+# Direct loader to shared libraries
+export LD_LIBRARY_PATH="${WORKDIR}/symmetrix-lammps/lammps/build:${LD_LIBRARY_PATH}"
+
 # Ensure OMP_NUM_THREADS is consistent with cpus-per-task above
 export OMP_NUM_THREADS=1
 export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK}
