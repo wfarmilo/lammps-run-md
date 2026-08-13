@@ -29,7 +29,7 @@ export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK}
 outprefix=$1
 
 # Find input files
-lmpinput="input-${outprefix}.inp"
+lmpinput="input-${outprefix}.lmp"
 
 if [ -e "${outprefix}.restart" ]; then
     ipiinput="${outprefix}.restart"
