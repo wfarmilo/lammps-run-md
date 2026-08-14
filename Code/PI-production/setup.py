@@ -45,7 +45,12 @@ for rt in runtypes:
             workdir.chmod(0o755)
 
             #Check that the output directory is linked up
-            link_dir = data_dir / f"out/PI-production-out/{rt}-{rn:02d}/{runlabel}"
+            data_parent = data_dir / f"out/PI-production-out/{rt}-{rn:02d}"
+            if not(data_parent.exists()):
+                data_parent.mkdir(parents=True)
+                data_parent.chmod(0o755)
+
+            link_dir = data_parent / f"{runlabel}"
 
             if not(link_dir.is_symlink()):
                 #Symlink output directory to pair in Data/out/PI-production-out
