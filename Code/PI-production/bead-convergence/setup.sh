@@ -22,7 +22,7 @@ do
     do
         for P in ${beads[*]}
         do
-            outpref="conv-${pi}-${T}-${P}"
+            outpref="conv-${pi}-T${T}-P${P}"
 
             sed -e "s|XXXPIMDTYPEXXX|${pi}|g"       \
                 -e "s|XXXTEMPXXX|${T}|g"            \
