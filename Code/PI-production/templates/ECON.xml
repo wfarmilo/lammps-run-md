@@ -15,7 +15,7 @@
   <system>
     <!-- nbeads scaled to 300K => 32 beads -->
     <initialize nbeads='XXXNBEADSXXX'>
-      <file mode='pdb'> XXXFILEINXXX </file>
+      <file mode='pdb'> initconf.pdb </file>
       <velocities mode='thermal' units='kelvin'> XXXTEMPXXX </velocities>
     </initialize>
     <forces>

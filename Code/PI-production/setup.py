@@ -35,21 +35,23 @@ for rt in runtypes:
     for rn in run_nums:
 
         #Label for this run
-        runlabel = f"{rt}-P{P}-{rn:02d}"
+        runlabel = f"{pimd_type}-T{temperature}-P{P}"
 
         #Make output directory (if necessary)
-        workdir = cwd /  f"out/{runlabel}"
+        workdir = cwd /  f"out/{rt}-{rn:02d}/{runlabel}"
 
         if not(workdir.exists()):
-            workdir.mkdir()
+            workdir.mkdir(parents=True)
             workdir.chmod(0o755)
 
             #Check that the output directory is linked up
-            link_dir = data_dir / f"out/PI-production-out/{runlabel}"
+            link_dir = data_dir / f"out/PI-production-out/{rt}-{rn:02d}/{runlabel}"
 
             if not(link_dir.is_symlink()):
                 #Symlink output directory to pair in Data/out/PI-production-out
                 os.symlink(workdir, link_dir, target_is_directory=True)
+        else:
+            raise Exception(f"Directory {str(workdir)} exists")
 
         #Get pdb file
         pdbin = data_dir /  f"input-pdb/{rt}-{rn:02d}.pdb"
@@ -92,7 +94,21 @@ for rt in runtypes:
             inptext[ini] = inptext[ini].replace(f"XXXPROPSTRIDEXXX", f"{100*step_size}")
             inptext[ini] = inptext[ini].replace(f"XXXTRAJSTRIDEXXX", f"{step_size}")
             inptext[ini] = inptext[ini].replace(f"XXXCHECKPTSTRIDEXXX", f"{step_size}")
-            inptext[ini] = inptext[ini].replace(f"XXXNBEADSXXX", f"{step_size}")
+            inptext[ini] = inptext[ini].replace(f"XXXNBEADSXXX", f"{P}")
+
+        #Copy over pdb file (and reformat for i-pi)
+        with open(pdbin, "r") as fpdb:
+            pdb_lines = fpdb.readlines()
+
+        #Filter out MODEL and ENDMDL
+        filtered = [line for line in pdb_lines if not(line.startswith("MODEL")) and not(line.startswith("ENDMDL"))]
+
+        with open(workdir / "initconf.pdb", "w") as pdbo:
+            #Add title line
+            pdbo.write(f"TITLE <{rt}-{rn:02d}>" + r"position{angstrom} cell{angstrom}")
+
+            pdbo.writelines(filtered)
+
 
         #Save lammps input
         lammps_inp_out = workdir / f"input-{outprefix}.lmp"

@@ -11,13 +11,13 @@ pitype=$3
 nbeads=$4
 
 runpref="${pitype}-T${temp}-P${nbeads}"
-folder="${dftype}-P${nbeads}-00"
+folder="${dftype}-00/${runpref}"
 echo "Running ${runpref} from ${folder}"
 
 
 # Change to work directory
-workdir=$(realpath "./out/${folder}/")
+workdir=$(realpath "./out/${folder}")
 
 cd $workdir || exit 1
 
-sbatch --time=20 --qos=short "${execdir}/templates/submit.sh" ${runpref}
+sbatch --time=20 --qos=short --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref}
