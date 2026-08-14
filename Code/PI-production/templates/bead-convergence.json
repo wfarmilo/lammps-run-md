@@ -1,11 +1,11 @@
 {
     "defect_types" : ["p0m1", "p1m0"],
-    "run_indices" : [1, 2, 3],
+    "run_indices" : [0, 1, 2],
     "step_size" : 16,
     "step_count" : 100000,
     "temperature" : XXXTEMPXXX,
     "PIMD_type" : "XXXPIMDTYPEXXX",
     "num_beads" : XXXNBEADSXXX,
     "output_name" : "XXXOUTPREFXXX",
-    "pdbinput" : "XXXDFXXX-N64.pdb"
+    "pdb_input_name" : "XXXDFXXX-N64"
 }

@@ -34,7 +34,7 @@ if args.from_file == None:
 else:
     #Read from json file
     with open(args.from_file) as f:
-        runparams = json.loads(f)
+        runparams = json.loads(f.read())
 
     runtypes = runparams["defect_types"]
     run_nums = runparams["run_indices"]
