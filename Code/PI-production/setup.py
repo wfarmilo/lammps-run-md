@@ -110,7 +110,7 @@ for rt in runtypes:
 
         with open(workdir / "initconf.pdb", "w") as pdbo:
             #Add title line
-            pdbo.write(f"TITLE <{rt}-{rn:02d}>" + r"position{angstrom} cell{angstrom}")
+            pdbo.write(f"TITLE <{rt}-{rn:02d}>" + r"position{angstrom} cell{angstrom}" + '\n')
 
             pdbo.writelines(filtered)
 
