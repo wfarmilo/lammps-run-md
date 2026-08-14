@@ -41,9 +41,9 @@ else:
 
     step_size = runparams["step_size"]
     Nt = runparams["step_count"]
-    temperature = runparams["temperature"]
+    temperature = int(runparams["temperature"])
     pimd_type = runparams["PIMD_type"]
-    P = runparams["num_beads"]
+    P = int(runparams["num_beads"])
     outprefix = runparams["output_name"]
     pdbinput = runparams["pdb_input_name"]
 
