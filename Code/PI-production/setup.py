@@ -5,6 +5,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("temp", help = "Simulation temperature", type = int)
 parser.add_argument("ipi_type", help = "Style of PIMD", type = str)
 parser.add_argument("bead_count", help = "Number of PIMD beads", type = int)
+parser.add_argument("-o", "--output", help="Name of output type directory (defaults to PIMD-TXXX-PYY)")
+parser.add_argument("-i", "--input", default = 'XXXDFXXX', help="Name of input pdb file from Data/input-pdb (defaults to pXmY-ZZ.pdb). Will replace string XXXDFXXX with pXmY-ZZ.")
+parser.add_argument("-q", "--quantity", help="Number of runs to do", default = 5, type = int)
+parser.add_argument("-ff", "--from_file", help = "Read all run parameters from a file")
 args=parser.parse_args()
 
 
@@ -12,17 +16,37 @@ import os
 from pathlib import Path
 import numpy as np
 from ase.io import read as aread, write as awrite
+import json
 
-#Run parameters
-runtypes = ['p0m1', 'p1m0', 'p1m1']
-run_nums = np.arange(5)
+if args.ff == None:
+    #Run parameters
+    runtypes = ['p0m1', 'p1m0', 'p1m1']
+    run_nums = np.arange(args.quantity)
 
-step_size = 16      # 4fs between frames
-Nt = 1000000        # 500ps of data
-temperature = args.temp
-pimd_type = args.ipi_type
-P = args.bead_count
-outprefix = f'{pimd_type}-T{temperature}-P{P}'
+    step_size = 16      # 4fs between frames
+    Nt = 1000000        # 500ps of data
+    temperature = args.temp
+    pimd_type = args.ipi_type
+    P = args.bead_count
+    outprefix = f'{pimd_type}-T{temperature}-P{P}' if args.output == None else args.output
+    pdbinput = args.input
+
+else:
+    #Read from json file
+    with open(args.from_file) as f:
+        runparams = json.loads(f)
+
+    runtypes = runparams["defect_types"]
+    run_nums = runparams["run_indices"]
+
+    step_size = runparams["step_size"]
+    Nt = runparams["step_count"]
+    temperature = runparams["temperature"]
+    pimd_type = runparams["PIMD_type"]
+    P = runparams["num_beads"]
+    outprefix = runparams["output_name"]
+    pdbinput = runparams["pdb_input_name"]
+
 
 cwd = Path("./").resolve()
 assert cwd.name == "PI-production", f"Wrong directory: {str(cwd)}"
@@ -34,11 +58,8 @@ templates_dir = cwd / "templates"
 for rt in runtypes:
     for rn in run_nums:
 
-        #Label for this run
-        runlabel = f"{pimd_type}-T{temperature}-P{P}"
-
         #Make output directory (if necessary)
-        workdir = cwd /  f"out/{rt}-{rn:02d}/{runlabel}"
+        workdir = cwd /  f"out/{rt}-{rn:02d}/{outprefix}"
 
         if not(workdir.exists()):
             workdir.mkdir(parents=True)
@@ -50,7 +71,7 @@ for rt in runtypes:
                 data_parent.mkdir(parents=True)
                 data_parent.chmod(0o755)
 
-            link_dir = data_parent / f"{runlabel}"
+            link_dir = data_parent / f"{outprefix}"
 
             if not(link_dir.is_symlink()):
                 #Symlink output directory to pair in Data/out/PI-production-out
@@ -59,7 +80,8 @@ for rt in runtypes:
             raise Exception(f"Directory {str(workdir)} exists")
 
         #Get pdb file
-        pdbin = data_dir /  f"input-pdb/{rt}-{rn:02d}.pdb"
+        pdbname = pdbinput.replace('XXXDFXXX', f"{rt}-{rn:02d}")
+        pdbin = data_dir /  f"input-pdb/{pdbname}.pdb"
 
         #Read in pdb file
         atoms = aread(pdbin)
