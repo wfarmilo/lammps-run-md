@@ -18,7 +18,7 @@ import numpy as np
 from ase.io import read as aread, write as awrite
 import json
 
-if args.ff == None:
+if args.from_file == None:
     #Run parameters
     runtypes = ['p0m1', 'p1m0', 'p1m1']
     run_nums = np.arange(args.quantity)
@@ -61,6 +61,8 @@ for rt in runtypes:
         #Make output directory (if necessary)
         workdir = cwd /  f"out/{rt}-{rn:02d}/{outprefix}"
 
+        print(f"Making directory {str(workdir.absolute())}")
+
         if not(workdir.exists()):
             workdir.mkdir(parents=True)
             workdir.chmod(0o755)
@@ -82,6 +84,8 @@ for rt in runtypes:
         #Get pdb file
         pdbname = pdbinput.replace('XXXDFXXX', f"{rt}-{rn:02d}")
         pdbin = data_dir /  f"input-pdb/{pdbname}.pdb"
+
+        print(f"Creating inputs from {str(pdbin.absolute())}")
 
         #Read in pdb file
         atoms = aread(pdbin)
