@@ -10,7 +10,7 @@
 #SBATCH --partition=standard
 #SBATCH --qos=standard
 
-export WORKDIR=$(realpath "/work/e898/e898/${USER}")
+export WORKDIR=$(realpath "/work/e898/shared/waf25")
 
 module load PrgEnv-gnu
 export CRAYPE_LINK_TYPE=dynamic
