@@ -4,6 +4,9 @@
 cd ../../PI-production/bead-convergence || exit 1
 execdir=$(realpath "../")
 
+# Get project account from directory name
+acct=$( pwd | awk -F'/' '{print $(NF-5)}')
+
 #Get run parameters (must be same as setup.sh)
 temps=(200) #(200 250 300)
 beads=(1) #(1 2 4 8 16 32 64)
@@ -34,7 +37,7 @@ do
 
                     runtime=$(( 60 * $nbeads ))
 
-                    sbatch --time=$runtime --qos=standard --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}
+                    sbatch --time=$runtime --qos=standard --account=${acct} --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}
 
                     #Return to starting directory
                     cd "${execdir}/bead-convergence"

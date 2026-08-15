@@ -4,6 +4,8 @@
 cd ../../Code/PI-production || exit 1
 execdir=$(realpath "./")
 
+# Get project account from directory name
+acct=$( pwd | awk -F'/' '{print $(NF-4)}')
 
 dftype=$1
 temp=$2
@@ -20,4 +22,4 @@ workdir=$(realpath "./out/${folder}")
 
 cd $workdir || exit 1
 
-sbatch --time=20 --qos=short --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}
+sbatch --time=20 --qos=short --account=${acct} --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}
