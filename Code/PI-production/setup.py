@@ -52,6 +52,7 @@ cwd = Path("./").resolve()
 assert cwd.name == "PI-production", f"Wrong directory: {str(cwd)}"
 data_dir = cwd.parents[1] /"Data"
 templates_dir = cwd / "templates"
+model_path = "/work/e898/shared/waf25/mace-models/ch2o-dens-inv_swa-1-8.json"
 
 #Set up output directories for classical production run
 
@@ -119,7 +120,7 @@ for rt in runtypes:
 
             #LAMMPS input file
             inptext[ini] = inptext[ini].replace(f"XXXSTEPSIZEXXX", f"{step_size}")
-            inptext[ini] = inptext[ini].replace(f"XXXMODELPATHXXX", str(templates_dir / "ch2o-dens-inv_swa-1-8.json"))
+            inptext[ini] = inptext[ini].replace(f"XXXMODELPATHXXX", str(model_path))
 
             #ipi input file
             inptext[ini] = inptext[ini].replace(f"XXXPROPSTRIDEXXX", f"{100*step_size}")

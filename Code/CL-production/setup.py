@@ -45,6 +45,7 @@ cwd = Path("./").resolve()
 assert cwd.name == "CL-production", f"Wrong directory: {str(cwd)}"
 data_dir = cwd.parents[1] /"Data"
 templates_dir = cwd / "templates"
+model_path = "/work/e898/shared/waf25/mace-models/ch2o-dens-inv_swa-1-8.json"
 
 
 #Set up output directories for classical production run
@@ -102,7 +103,7 @@ for rt in runtypes:
         #Swap out placeholders
         inptext = inptext.replace(f"XXXTEMPXXX", f"{temperature}")
         inptext = inptext.replace(f"XXXSTEPSIZEXXX", f"{step_size}")
-        inptext = inptext.replace(f"XXXMODELPATHXXX", str(templates_dir / "ch2o-dens-inv_swa-1-8.json"))
+        inptext = inptext.replace(f"XXXMODELPATHXXX", str(model_path))
         inptext = inptext.replace(f"XXXOUTPREFXXX", outprefix)
 
         #Save lammps input
