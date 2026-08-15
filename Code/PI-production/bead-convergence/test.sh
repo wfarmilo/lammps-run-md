@@ -6,6 +6,7 @@ execdir=$(realpath "../")
 
 # Get project account from directory name
 acct=$( pwd | awk -F'/' '{print $(NF-5)}')
+if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 dftype=$1
 temp=$2

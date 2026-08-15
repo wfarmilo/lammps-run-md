@@ -6,6 +6,7 @@ execdir=$(realpath "../")
 
 # Get project account from directory name
 acct=$( pwd | awk -F'/' '{print $(NF-5)}')
+if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 #Get run parameters (must be same as setup.sh)
 temps=(200) #(200 250 300)
