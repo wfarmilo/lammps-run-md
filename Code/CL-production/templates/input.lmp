@@ -1,8 +1,5 @@
 # LAMMPS file (modified from XRA and DWL- annotated by WAF)
 
-###### Let us know what is happening ######
-log log-XXXOUTPREFXXX.lammps  #Redirects default log.lammps to file of our choosing
-
 ########## Set up simulation box ##########
 units       metal       # Define default units we are using (grams/mole, angstroms, ps, eV, K, bar, etc.)
 dimension   3           # Dimensionality of the system
