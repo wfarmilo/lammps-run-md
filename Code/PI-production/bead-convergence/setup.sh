@@ -2,7 +2,7 @@
 
 # Check directory
 cd ../../PI-production/bead-convergence || exit 1
-source ../../../../.venv/bin/activate
+source /work/e898/shared/waf25/.venv/bin/activate
 
 # Switch to PI-production parent dir
 cd ..
