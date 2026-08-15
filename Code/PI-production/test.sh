@@ -20,4 +20,4 @@ workdir=$(realpath "./out/${folder}")
 
 cd $workdir || exit 1
 
-sbatch --time=20 --qos=short --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref}
+sbatch --time=20 --qos=short --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}

@@ -1,8 +1,5 @@
 # LAMMPS file (modified from XRA and DWL- annotated by WAF)
 
-###### Let us know what is happening ######
-log log-XXXOUTPREFXXX.lammps  #Redirects default log.lammps to file of our choosing
-
 ########## Set up simulation box ##########
 units       metal       # Define default units we are using (grams/mole, angstroms, ps, eV, K, bar, etc.)
 dimension   3           # Dimensionality of the system
@@ -46,27 +43,8 @@ fix NVT1 all nvt temp XXXTEMPXXX XXXTEMPXXX 0.05
 
 ############## File outputs ###############
 
-#Open stream for trajectory output
-dump DUMP1 all dcd XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.dcd
-
-    # dump LABEL TARGET FILETYPE STEPSIZE FILENAME
-    # LABEL: internal name for this dump
-    # TARGET: which group to perform the dump on
-    # FILETYPE: type of file to output (here .dcd)
-    # STEPSIZE: the frequency of dumps, expressed in frames
-    # FILENAME: the output name for the dump file
-
-# Unwrap trajectory- so that particles are not confined to the periodic cell (for diffusion)
-dump_modify DUMP1 unwrap yes
-
-# Checkpoint data throughout the simulation (cycles between a and b in case of mid-write crash)
-restart 50000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart
-
-# Attach to ipi node (fix NAME TARGET ipi SOCKETID PORT)
+# Attach to ipi node (fix NAME TARGET i-pi SOCKETID PORT)
 fix IPI1 all ipi XXXNIDXXX 31415
 
 # Run simulation- run NFRAMES (here should be 500ps worth)
 run XXXNSTEPSXXX
-
-# Save final restart file to continue simulation if desired
-write_restart final-XXXOUTPREFXXX.*.restart     

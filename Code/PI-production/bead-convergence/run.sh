@@ -34,7 +34,7 @@ do
 
                     runtime=$(( 60 * $nbeads ))
 
-                    sbatch --time=$runtime --qos=standard --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref}
+                    sbatch --time=$runtime --qos=standard --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}
 
                     #Return to starting directory
                     cd "${execdir}/bead-convergence"

@@ -31,6 +31,15 @@ export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK}
 # Get run name
 outprefix=$1
 
+# Get total bead count (for parallelization)
+nbeads=$2
+cores_per_bead=$(( 128 / $nbeads ))
+
+if [ $cores_per_bead -lt 1 ]; then
+    echo "Too many beads ${nbeads} -> ${cores_per_bead}"
+    exit 1
+fi
+
 # Find input files
 lmpinput="input-${outprefix}.lmp"
 
@@ -49,7 +58,21 @@ sed -i "s|ipi .*|ipi ${HOSTNAME} ${portnum}|g" "${lmpinput}"    #match anything 
 i-pi "${ipiinput}" &> log.ipi &
 sleep 20
 
-# Run lammps
-srun ${LAMMPS} -in "${lmpinput}" &
+# Run lammps, split over cores
+for (( i=0; i<nbeads; i++ )); do
+    if [ "$i" -eq 0 ]; then
+        logflag="log-${outprefix}.lammps"
+    else
+        logflag="none"
+    fi
 
+    #Run, split core for beads
+    srun    --exact  \
+            --ntasks=${cores_per_bead}  \
+            --ntasks-per-node=${cores_per_bead} \
+            --mem=$(( $cores_per_bead * 1500 ))M \
+            ${LAMMPS} -log ${logflag} -in "${lmpinput}" &
+
+
+done
 wait
