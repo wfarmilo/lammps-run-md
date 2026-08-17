@@ -19,10 +19,18 @@ for T in ${temps[*]}
 do
     for pdbin in ${pdb_exts[*]}
     do
-        pdbname=${pdbin}
-        if [ -z ${pdbin} ]; then pdbname="96"
 
-        outpref="conv-${pi}-T${T}-N${pdbname}"
+        # Output file name
+        outpref="conv-T${T}-N${pdbin}"
+
+        # Use pXmY placeholder for setup.py
+        pdbname="XXXDFXXX-N${pdbin}"
+
+        # Original size does not have N specifier
+        if [ -z ${pdbin} ]; then 
+            pdbname="XXXDFXXX"
+            outpref="conv-T${T}-N96"
+        fi
 
         sed -e "s|XXXPDBNAMEXXX|${pdbname}|g"       \
             -e "s|XXXTEMPXXX|${T}|g"            \
