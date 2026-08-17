@@ -1,2 +1,2 @@
 # lammps-run-md
-Repository for production runs of classical and PIMD on ice Ih systems.
+Repository for molecular dynamics production runs on defective ice Ih systems. Currently has two styles of production run, classical (CL) and path-integral molecular dynamics (PIMD -> PI). Uses the [LAMMPS](https://www.lammps.org/#gsc.tab=0) molecular dynamics code as the forcefield driver, hooked up to a [MACE](https://doi.org/10.52202/068431-0830) model extracted for CPU use with the [symmetrix](https://github.com/wcwitt/symmetrix) package. Path-integral techniques use the [i-pi](https://ipi-code.org/) code.
