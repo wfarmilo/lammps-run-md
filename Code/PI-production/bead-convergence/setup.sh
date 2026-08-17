@@ -12,8 +12,8 @@ templates_dir="${current_dir}/templates"
 
 # Create temporary run parameters
 temps=(200) #(200 250 300)
-beads=(1) #(1 2 4 8 16 32 64)
-pitypes=(PILE) #(PILE ECON)
+beads=(16) #(1 2 4 8 16 32 64)
+pitypes=(PILE ECON) #(PILE ECON)
 
 
 for pi in ${pitypes[*]}

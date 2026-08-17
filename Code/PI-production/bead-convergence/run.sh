@@ -10,8 +10,8 @@ if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 #Get run parameters (must be same as setup.sh)
 temps=(200) #(200 250 300)
-beads=(1) #(1 2 4 8 16 32 64)
-pitypes=(PILE) #(PILE ECON)
+beads=(16) #(1 2 4 8 16 32 64)
+pitypes=(PILE ECON) #(PILE ECON)
 
 #Get defect types and run numbers from json file
 dftypes=$(jq -r '.defect_types[]' "${execdir}/templates/bead-convergence.json")
@@ -38,7 +38,7 @@ do
 
                     runtime=$(( 60 * $nbeads ))
 
-                    sbatch --time=$runtime --qos=standard --account=${acct} --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads}
+                    sbatch --time=$runtime --qos=standard --account=${acct} --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads} ${runtime}
 
                     #Return to starting directory
                     cd "${execdir}/bead-convergence"
