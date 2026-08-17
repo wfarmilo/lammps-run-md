@@ -5,7 +5,6 @@
 #SBATCH --ntasks=128
 #SBATCH --ntasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=24:00:00
 #SBATCH --account=e898
 #SBATCH --partition=standard
 #SBATCH --qos=standard
@@ -33,6 +32,11 @@ outprefix=$1
 
 # Get total bead count (for parallelization)
 nbeads=$2
+
+# Get walltime for job
+JOB_TIME=$3
+
+# Determine how many cores each bead gets
 cores_per_bead=$(( 128 / $nbeads ))
 
 if [ $cores_per_bead -lt 1 ]; then
@@ -53,6 +57,10 @@ fi
 portnum=31415    
 sed -i "s|address>.*<|address>${HOSTNAME}<|g" "${ipiinput}"     #match anything btwn address>___< and replace with node id
 sed -i "s|ipi .*|ipi ${HOSTNAME} ${portnum}|g" "${lmpinput}"    #match anything after the field 'ipi' and replace with nid, portname
+
+# Swap in for job time (in seconds)
+SAFE_TIME=$(( ($JOB_TIME - 5) * 60 ))
+sed -i "s|total_time>.*<|total_time>${SAFE_TIME}<|g" "${ipiinput}"
 
 # Start ipi server
 i-pi "${ipiinput}" &> log.ipi &

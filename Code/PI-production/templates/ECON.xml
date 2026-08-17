@@ -12,6 +12,7 @@
       <port> 31415 </port>
       <latency> 1e-4 </latency>
   </ffsocket>
+  <total_time> XXXJOBTIMEXXX </total_time>
   <system>
     <!-- nbeads scaled to 300K => 32 beads -->
     <initialize nbeads='XXXNBEADSXXX'>
