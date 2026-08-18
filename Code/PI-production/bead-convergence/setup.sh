@@ -11,8 +11,8 @@ current_dir=$(realpath ".")
 templates_dir="${current_dir}/templates"
 
 # Create temporary run parameters
-temps=(200) #(200 250 300)
-beads=(16) #(1 2 4 8 16 32 64)
+temps=(200) #(200 300)
+beads=(2 8 32) #(1 2 4 8 16 32 64)
 pitypes=(PILE ECON) #(PILE ECON)
 
 
