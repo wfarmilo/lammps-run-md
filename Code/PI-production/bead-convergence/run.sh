@@ -1,4 +1,4 @@
-#!/bin/bash
+\#!/bin/bash
 
 # Directory check
 cd ../../PI-production/bead-convergence || exit 1
@@ -10,7 +10,7 @@ if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 #Get run parameters (must be same as setup.sh)
 temps=(200) #(200 250 300)
-beads=(16) #(1 2 4 8 16 32 64)
+beads=(2 8 32) #(1 2 4 8 16 32 64)
 pitypes=(PILE ECON) #(PILE ECON)
 
 #Get defect types and run numbers from json file
@@ -32,11 +32,11 @@ do
                     echo "Running ${runpref} from ${folder}"
 
                     # Change to work directory
-                    workdir=$(realpath "../out/${folder}")
+                    workdir=$(realpath "../out/${folder}") || exit 1
 
                     cd $workdir || exit 1
 
-                    runtime=$(( 60 * $nbeads ))
+                    runtime=$(( 60 * 20 ))
 
                     sbatch --time=$runtime --qos=standard --account=${acct} --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads} ${runtime}
 
