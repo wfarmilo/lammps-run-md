@@ -47,10 +47,12 @@ fi
 # Find input files
 lmpinput="input-${outprefix}.lmp"
 
-if [ -e "${outprefix}.restart" ]; then
+if [ -e "RESTART" ]; then                   # First look for end of simulation (no overwriting)
+    ipiinput="RESTART"
+elif [ -e "${outprefix}.restart" ]; then    # Then look for checkpoint (maybe omit this step?)
     ipiinput="${outprefix}.restart"
 else
-    ipiinput="input-${outprefix}.xml"
+    ipiinput="input-${outprefix}.xml"       # Then if neither exist use input
 fi
 
 # General substitution for node id
