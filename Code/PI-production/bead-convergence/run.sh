@@ -36,7 +36,7 @@ do
 
                     cd $workdir || exit 1
 
-                    runtime=$(( 60 * 20 ))  # In minutes
+                    runtime=$(( 60 * 22 ))  # In minutes
 
                     sbatch  --time=$runtime \
                             --qos=taskfarm \
