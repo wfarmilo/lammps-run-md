@@ -38,7 +38,12 @@ do
 
                     runtime=$(( 60 * 20 ))  # In minutes
 
-                    sbatch --time=$runtime --qos=taskfarm --account=${acct} --output="${workdir}/slurm.log" "${execdir}/templates/submit.sh" ${runpref} ${nbeads} ${runtime}
+                    sbatch  --time=$runtime \
+                            --qos=taskfarm \
+                            --account=${acct} \
+                            --output="${workdir}/slurm.log" \
+                            --job-name="${folder}" \
+                            "${execdir}/templates/submit.sh" ${runpref} ${nbeads} ${runtime}
 
                     #Return to starting directory
                     cd "${execdir}/bead-convergence"
