@@ -66,6 +66,10 @@ sed -i "s|total_time>.*<|total_time>${SAFE_TIME}<|g" "${ipiinput}"
 
 # Start ipi server
 i-pi "${ipiinput}" &> log.ipi &
+
+# Grab ipi process ID so we can cancel job later
+IPI_PID=$!
+
 sleep 20
 
 # Run lammps, split over cores
@@ -85,4 +89,9 @@ for (( i=0; i<nbeads; i++ )); do
 
 
 done
-wait
+
+# Wait until ipi is done
+wait "${IPI_PID}"
+
+# After ipi is done, cancel itself
+scancel "${SLURM_JOB_ID}"
