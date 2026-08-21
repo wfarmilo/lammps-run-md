@@ -24,7 +24,7 @@ do
             echo "Running ${runpref} from ${folder}"
 
             # Change to work directory
-            workdir=$(realpath "../out/${folder}") || exit 1
+            workdir=$(realpath "./out/${folder}") || exit 1
 
             cd $workdir || exit 1
 

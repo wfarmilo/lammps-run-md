@@ -59,7 +59,7 @@ for rt in runtypes:
         print(f"Making directory {str(workdir.absolute())}")
 
         if not(workdir.exists()):
-            workdir.mkdir()
+            workdir.mkdir(parents=True)
             workdir.chmod(0o755)
 
             #Check that the output directory is linked up
