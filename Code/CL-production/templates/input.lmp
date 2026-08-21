@@ -59,8 +59,8 @@ dump_modify DUMP1 unwrap yes
 # Checkpoint data throughout the simulation (cycles between a and b in case of mid-write crash)
 restart 50000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart
 
-# Run simulation- run NFRAMES (here should be 500ps worth)
-run 1000000
+# Run simulation- run NFRAMES
+run XXXNSTEPSXXX
 
 # Save final restart file to continue simulation if desired
 write_restart final-XXXOUTPREFXXX.*.restart     

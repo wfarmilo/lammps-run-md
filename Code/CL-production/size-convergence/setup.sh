@@ -2,7 +2,7 @@
 
 # Check directory
 cd ../../CL-production/size-convergence || exit 1
-source ../../../../.venv/bin/activate
+source /work/e898/shared/waf25/.venv/bin/activate
 
 # Switch to CL-production parent dir
 cd ..

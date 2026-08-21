@@ -71,7 +71,7 @@ for rt in runtypes:
             link_dir = data_parent / f"{outprefix}"
 
             if not(link_dir.is_symlink()):
-                #Symlink output directory to pair in Data/out/PI-production-out
+                #Symlink output directory to pair in Data/out/CL-production-out
                 os.symlink(workdir, link_dir, target_is_directory=True)
 
         else:
@@ -105,6 +105,7 @@ for rt in runtypes:
         inptext = inptext.replace(f"XXXSTEPSIZEXXX", f"{step_size}")
         inptext = inptext.replace(f"XXXMODELPATHXXX", str(model_path))
         inptext = inptext.replace(f"XXXOUTPREFXXX", outprefix)
+        inptext = inptext.replace(f"XXXNSTEPSXXX", f"{Nt}")
 
         #Save lammps input
         lammps_inp_out = workdir / f"input-{outprefix}.lmp"
