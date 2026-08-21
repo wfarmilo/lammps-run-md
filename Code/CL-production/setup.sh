@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check directory
-cd ../..Code/CL-production || exit 1
+cd ../../Code/CL-production || exit 1
 source /work/e898/shared/waf25/.venv/bin/activate
 
 current_dir=$(realpath ".")
