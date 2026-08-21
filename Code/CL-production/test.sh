@@ -30,7 +30,7 @@ outpref="prod-T${T}"
 
 # Replace json values for setup.py
 sed -e "s|XXXOUTPREFXXX|${outpref}|g"                    \
-    -e "s|"temperature" : .*,|"temperature" : ${T},|g"   \
+    -e "s|\"temperature\" : .*,|\"temperature\" : ${T},|g"   \
     "${templates_dir}/production.json" > "${templates_dir}/temp.json"
 
 python setup.py 0 -ff "${templates_dir}/temp.json"
