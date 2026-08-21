@@ -1,4 +1,4 @@
-\#!/bin/bash
+#!/bin/bash
 
 # Directory check
 cd ../../PI-production/bead-convergence || exit 1
