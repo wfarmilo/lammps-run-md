@@ -25,11 +25,23 @@ export LD_LIBRARY_PATH="${WORKDIR}/symmetrix-lammps/lammps/build:${LD_LIBRARY_PA
 export OMP_NUM_THREADS=1
 export SRUN_CPUS_PER_TASK=${SLURM_CPUS_PER_TASK}
 
-# Get run name
-outprefix=$1
+# Get input file name
+inputname=$1
+
+# Get walltime (input in minutes, convert to seconds)
+walltime=$2
+safe_time=$(( ($walltime - 5) * 60 ))
 
 # Find input files
-lmpinput="input-${outprefix}.lmp"
+lmpinput="${inputname}"
+
+if [ ! -e ${lmpinput} ]; then
+    scancel $SLURM_JOB_ID
+    exit 1
+fi
+
+# Sub in safe time
+sed -i "s|timer timeout .* every|timer timeout ${safe_time} every|g" "${lmpinput}"
 
 # Run lammps
 srun ${LAMMPS} -in "${lmpinput}" &

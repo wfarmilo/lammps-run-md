@@ -1,15 +1,8 @@
 # LAMMPS file (modified from XRA and DWL- annotated by WAF)
 
 ########## Set up simulation box ##########
-units       metal       # Define default units we are using (grams/mole, angstroms, ps, eV, K, bar, etc.)
-dimension   3           # Dimensionality of the system
-boundary    p p p       # Periodic boundaries in all 3 dimensions
-atom_style    atomic    # Style of atom data, "atomic" means we only have atom id, atom type, xyz position, and masses (no charges, molecules or bonds)
-atom_modify   map yes   # Save a lookup table for atom IDs
 
-newton        on        # Use newton's 3rd law to save compute (Fij = - Fji)
-
-read_data   ./initconf.data     # Read in configuration from input file (MUST be LAMMPS data format, and contain masses)
+read_restart   XXXRESTARTFILEXXX        # Read from restart file (contains box info)
 
 ########### Set up force field ############
 pair_style    symmetrix/mace            # Style of model we are using
@@ -18,17 +11,6 @@ pair_coeff    * * XXXMODELPATHXXX H O   # Assign atom type 1 to H and 2 to O, th
 ########## Set up run parameters ###########
 timestep 0.0005         # Timestep between simulation frames (NOTE: units metal -> this is in ps)
 
-# Initialize velocity distribution
-velocity all create XXXTEMPXXX 31415 dist gaussian
-
-    # velocity TARGET create TEMP SEED dist DISTRIBUTION
-    # TARGET: which group to apply the velocity to
-    # create: tells you to create a new velocity distribution
-    # TEMP: corresponding temperature for this velocity
-    # SEED: seed for random number generator they use
-    # dist: flag for lammps to provide a custom distribution (default is uniform)
-    # DISTRIBUTION: the type of distribution you want (here we use a gaussian)
-    # NOTE: will by default set the linear COM momentum to 0 (mom yes)
 
 # Create NVT thermostat
 fix NVT1 all nvt temp XXXTEMPXXX XXXTEMPXXX 0.05
@@ -56,6 +38,9 @@ dump DUMP1 all dcd XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.dcd
 
 # Unwrap trajectory- so that particles are not confined to the periodic cell (for diffusion)
 dump_modify DUMP1 unwrap yes
+
+# Append to existing dump
+dump_modify DUMP1 append yes
 
 # Checkpoint data throughout the simulation (cycles between a and b in case of mid-write crash)
 restart 10000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart

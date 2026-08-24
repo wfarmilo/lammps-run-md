@@ -62,12 +62,14 @@ cd $workdir || exit 1
 
 runtime=20  # In minutes
 
+filein="input-${runpref}.lmp"
+
 sbatch  --time=$runtime \
         --qos=short \
         --account=${acct} \
         --output="${workdir}/slurm.log" \
         --job-name="${folder}" \
-        "${execdir}/templates/submit.sh" ${runpref}
+        "${execdir}/templates/submit.sh" ${filein} ${runtime}
 
 #Return to starting directory
 cd "${execdir}"

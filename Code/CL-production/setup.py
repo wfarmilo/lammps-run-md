@@ -95,19 +95,22 @@ for rt in runtypes:
                masses = True)
 
         #Get lammps input
-        lammps_inp = templates_dir / "input.lmp"
+        input_names = ["input", "input-restart"]
 
-        with open(lammps_inp, "r") as li:
-            inptext = li.read()
+        for name in input_names:
+            lammps_inp_in = templates_dir / f"{name}.lmp"
 
-        #Swap out placeholders
-        inptext = inptext.replace(f"XXXTEMPXXX", f"{temperature}")
-        inptext = inptext.replace(f"XXXSTEPSIZEXXX", f"{step_size}")
-        inptext = inptext.replace(f"XXXMODELPATHXXX", str(model_path))
-        inptext = inptext.replace(f"XXXOUTPREFXXX", outprefix)
-        inptext = inptext.replace(f"XXXNSTEPSXXX", f"{Nt}")
+            with open(lammps_inp_in, "r") as li:
+                inptext = li.read()
 
-        #Save lammps input
-        lammps_inp_out = workdir / f"input-{outprefix}.lmp"
-        with open(lammps_inp_out, "w") as lio:
-            lio.write(inptext)
+            #Swap out placeholders
+            inptext = inptext.replace(f"XXXTEMPXXX", f"{temperature}")
+            inptext = inptext.replace(f"XXXSTEPSIZEXXX", f"{step_size}")
+            inptext = inptext.replace(f"XXXMODELPATHXXX", str(model_path))
+            inptext = inptext.replace(f"XXXOUTPREFXXX", outprefix)
+            inptext = inptext.replace(f"XXXNSTEPSXXX", f"{Nt}")
+
+            #Save lammps input
+            lammps_inp_out = workdir / f"{name}-{outprefix}.lmp"
+            with open(lammps_inp_out, "w") as lio:
+                lio.write(inptext)

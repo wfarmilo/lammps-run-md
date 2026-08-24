@@ -30,12 +30,21 @@ do
 
             runtime=$(( 60 * 24 ))  # In minutes
 
+            restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
+            if [ -e "${restartfile}" ]; then
+                filein="input-restart-${runpref}.lmp"
+                sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
+            else
+                filein="input-${runpref}.lmp"
+            fi
+
+
             sbatch  --time=$runtime \
             --qos=lowpriority \
             --account=${acct} \
             --output="${workdir}/slurm.log" \
             --job-name="${folder}" \
-            "${execdir}/templates/submit.sh" ${runpref}
+            "${execdir}/templates/submit.sh" ${filein} ${runtime}
 
             #Return to starting directory
             cd "${execdir}"
