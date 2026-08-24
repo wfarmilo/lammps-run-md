@@ -4,11 +4,11 @@
 cd ../../Code/CL-production || exit 1
 source /work/e898/shared/waf25/.venv/bin/activate
 
-current_dir=$(realpath ".")
-templates_dir="${current_dir}/templates"
+execdir=$(realpath "./")
+templates_dir="${execdir}/templates"
 
 #Get temperatures
-temps=$(jq -r '.temperatures[]' "${execdir}/templates/production.json")
+temps=$(jq -r '.temperature[]' "${templates_dir}/production.json")
 
 for T in ${temps[*]}
 do

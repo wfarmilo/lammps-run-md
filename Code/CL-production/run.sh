@@ -9,7 +9,7 @@ acct=$( pwd | awk -F'/' '{print $(NF-5)}')
 if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 #Get defect types and run numbers from json file
-temps=$(jq -r '.temperatures[]' "${execdir}/templates/production.json")
+temps=$(jq -r '.temperature[]' "${execdir}/templates/production.json")
 dftypes=$(jq -r '.defect_types[]' "${execdir}/templates/production.json")
 run_nums=$(jq -r '.run_indices[]' "${execdir}/templates/production.json")
 
