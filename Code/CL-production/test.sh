@@ -19,6 +19,8 @@ T=200
 
 ######################## setup.sh #################################
 
+if false; then	##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 # Check directory
 cd ../../Code/CL-production || exit 1
 source /work/e898/shared/waf25/.venv/bin/activate
@@ -36,6 +38,8 @@ sed -e "s|XXXOUTPREFXXX|${outpref}|g"                    \
 python setup.py 0 -ff "${templates_dir}/temp.json"
 
 rm "${templates_dir}/temp.json"
+
+fi ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ########################## run.sh #################################
 
