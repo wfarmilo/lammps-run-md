@@ -61,7 +61,7 @@ dump_modify DUMP1 unwrap yes
 restart 10000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart
 
     # WARNING: If the checkpoint stride is longer than your simulation stride
-    # (which it should be here, 10000 is big) then restarting from a checkpoint
+    # (which it will be here, 10000 is big) then restarting from a checkpoint
     # file will double-write certain frames. For example, if we checkpoint every 
     # 50 frames and write every 10, a trajectory may look like (crashing at 70):
     # 10 20 30 40 50 60 70 |

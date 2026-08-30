@@ -35,7 +35,7 @@ safe_time=$(( ($walltime - 5) * 60 ))
 # Find input files
 lmpinput="${inputname}"
 
-if [ ! -e ${lmpinput} ]; then
+if [ ! -s ${lmpinput} ]; then
     scancel $SLURM_JOB_ID
     exit 1
 fi

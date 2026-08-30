@@ -5,5 +5,6 @@
     "step_count" : 100000,
     "temperature" : "XXXTEMPXXX",
     "output_name" : "XXXOUTPREFXXX",
-    "pdb_input_name" : "XXXPDBNAMEXXX"
+    "pdb_input_name" : "XXXPDBNAMEXXX",
+    "pdb_sizes" : [64, 96, 128]
 }

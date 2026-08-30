@@ -10,9 +10,9 @@ cd ..
 current_dir=$(realpath ".")
 templates_dir="${current_dir}/templates"
 
-# Create temporary run parameters
-temps=(200) #(200 250 300)
-pdb_exts=("") #("64" "" "128")  # "" means 96 here
+#Get run parameters
+temps=$(jq -r '.temperature[]' "${templates_dir}/size-convergence.json")
+pdb_exts=$(jq -r '.pdb_sizes[]' "${templates_dir}/size-convergence.json")
 
 
 for T in ${temps[*]}
@@ -27,12 +27,11 @@ do
         pdbname="XXXDFXXX-N${pdbin}"
 
         # Original size does not have N specifier
-        if [ -z ${pdbin} ]; then 
+        if [ ${pdbin} -eq 96 ]; then 
             pdbname="XXXDFXXX"
-            outpref="conv-T${T}-N96"
         fi
 
-        sed -e "s|XXXPDBNAMEXXX|${pdbname}|g"       \
+        sed -e "s|XXXPDBNAMEXXX|${pdbname}|g"   \
             -e "s|XXXTEMPXXX|${T}|g"            \
             -e "s|XXXOUTPREFXXX|${outpref}|g"   \
             "${templates_dir}/size-convergence.json" > "${templates_dir}/temp.json"
