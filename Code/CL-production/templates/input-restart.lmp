@@ -1,6 +1,7 @@
 # LAMMPS file (modified from XRA and DWL- annotated by WAF)
 
 ########## Set up simulation box ##########
+atom_modify   map yes   # Save a lookup table for atom IDs
 
 read_restart   XXXRESTARTFILEXXX        # Read from restart file (contains box info)
 
