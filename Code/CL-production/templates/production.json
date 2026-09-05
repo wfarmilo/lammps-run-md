@@ -1,7 +1,7 @@
 {
     "defect_types" : ["p0m1", "p1m0"],
     "run_indices" : [0, 1, 2, 3],
-    "step_size" : 4,
+    "step_size" : 8,
     "step_count" : 4000000,
     "temperature" : [200, 300],
     "output_name" : "XXXOUTPREFXXX",
