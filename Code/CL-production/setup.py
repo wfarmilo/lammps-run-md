@@ -75,7 +75,7 @@ for rt in runtypes:
                 os.symlink(workdir, link_dir, target_is_directory=True)
 
         else:
-            raise Exception(f"Directory {str(workdir)} exists")
+            print(f"Directory {str(workdir)} exists")
 
         #Get pdb file
         pdbname = pdbinput.replace('XXXDFXXX', f"{rt}-{rn:02d}")
