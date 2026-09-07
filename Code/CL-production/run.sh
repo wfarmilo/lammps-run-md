@@ -9,46 +9,88 @@ acct=$( pwd | awk -F'/' '{print $(NF-5)}')
 if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 #Get defect types and run numbers from json file
-temps=$(jq -r '.temperature[]' "${execdir}/templates/production.json")
-dftypes=$(jq -r '.defect_types[]' "${execdir}/templates/production.json")
-run_nums=$(jq -r '.run_indices[]' "${execdir}/templates/production.json")
+jsonfile="${execdir}/templates/production.json"
+compounded=$(jq -r '.style' "${jsonfile}")
+mapfile -t temps < <(jq -r '.temperature[]' "${jsonfile}")
+mapfile -t dftypes < <(jq -r '.defect_types[]' "${jsonfile}")
+mapfile -t run_nums < <(jq -r '.run_indices[]' "${jsonfile}")
 
-for dftype in ${dftypes}
-do
-    for run in ${run_nums}
+if [ $compounded -eq "true" ]; then
+    for dftype in ${dftypes[@]}
     do
-        for T in ${temps}
+        for run in ${run_nums[@]}
         do
-            runpref="prod-T${T}"
-            folder="${dftype}-0${run}/${runpref}"
-            echo "Running ${runpref} from ${folder}"
+            for T in ${temps[@]}
+            do
+                runpref="prod-T${T}"
+                folder="${dftype}-0${run}/${runpref}"
+                echo "Running ${runpref} from ${folder}"
 
-            # Change to work directory
-            workdir=$(realpath "./out/${folder}") || exit 1
+                # Change to work directory
+                workdir=$(realpath "./out/${folder}") || exit 1
 
-            cd $workdir || exit 1
+                cd $workdir || exit 1
 
-            runtime=$(( 60 * 24 ))  # In minutes
+                runtime=$(( 60 * 24 ))  # In minutes
 
-            restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
-            if [ -e "${restartfile}" ]; then
-                filein="input-restart-${runpref}.lmp"
-                sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
-            else
-                filein="input-${runpref}.lmp"
-            fi
+                restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
+                if [ -e "${restartfile}" ]; then
+                    filein="input-restart-${runpref}.lmp"
+                    sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
+                else
+                    filein="input-${runpref}.lmp"
+                fi
 
 
-            sbatch  --time=$runtime \
-            --qos=lowpriority \
-            --account=${acct} \
-            --output="${workdir}/slurm.log" \
-            --job-name="${folder}" \
-            "${execdir}/templates/submit.sh" ${filein} ${runtime}
+                sbatch  --time=$runtime \
+                --qos=lowpriority \
+                --account=${acct} \
+                --output="${workdir}/slurm.log" \
+                --job-name="${folder}" \
+                "${execdir}/templates/submit.sh" ${filein} ${runtime}
 
-            #Return to starting directory
-            cd "${execdir}"
+                #Return to starting directory
+                cd "${execdir}"
+            done
         done
     done
-done
+else
+    runcount=${#temps[@]}
+    for (( i = 0; i < $runcount; i++ ))
+    do
+        dftype="${dftypes[$i]}"
+        run="${run_nums[$i]}"
+        T="${temps[$i]}"
 
+
+        runpref="prod-T${T}"
+        folder="${dftype}-0${run}/${runpref}"
+        echo "Running ${runpref} from ${folder}"
+
+        # Change to work directory
+        workdir=$(realpath "./out/${folder}") || exit 1
+
+        cd $workdir || exit 1
+
+        runtime=$(( 60 * 24 ))  # In minutes
+
+        restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
+        if [ -e "${restartfile}" ]; then
+            filein="input-restart-${runpref}.lmp"
+            sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
+        else
+            filein="input-${runpref}.lmp"
+        fi
+
+
+        sbatch  --time=$runtime \
+        --qos=lowpriority \
+        --account=${acct} \
+        --output="${workdir}/slurm.log" \
+        --job-name="${folder}" \
+        "${execdir}/templates/submit.sh" ${filein} ${runtime}
+
+        #Return to starting directory
+        cd "${execdir}"
+    done
+fi

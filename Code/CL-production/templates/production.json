@@ -1,4 +1,5 @@
 {
+    "compounded" : true,
     "defect_types" : ["p0m0", "p0m1", "p1m0"],
     "run_indices" : [0, 1, 2, 3],
     "step_size" : 8,

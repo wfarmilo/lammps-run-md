@@ -1,0 +1,40 @@
+{
+    "compounded" : false,
+    "defect_types" : [
+        "p0m0",
+        "p0m0",
+        "p0m0",
+        "p0m0",
+        "p0m0",
+        "p0m0", 
+        "p0m1", 
+        "p1m0",
+        "p1m0"
+    ],
+    "run_indices" : [
+        0,
+        1,
+        2,
+        0,
+        1,
+        2,
+        0,
+        2,
+        2
+    ],
+    "temperature" : [
+        200, 
+        300,
+        200, 
+        300,
+        200, 
+        300,
+        200,
+        200,
+        300
+    ],
+    "step_size" : 8,
+    "step_count" : 4000000,
+    "output_name" : "XXXOUTPREFXXX",
+    "pdb_input_name" : "XXXDFXXX"
+}
