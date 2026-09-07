@@ -15,12 +15,12 @@ mapfile -t temps < <(jq -r '.temperature[]' "${jsonfile}")
 mapfile -t dftypes < <(jq -r '.defect_types[]' "${jsonfile}")
 mapfile -t run_nums < <(jq -r '.run_indices[]' "${jsonfile}")
 
-if [ $compounded -eq "true" ]; then
-    for dftype in ${dftypes[@]}
+if [ $compounded == "true" ]; then
+    for dftype in "${dftypes[@]}"
     do
-        for run in ${run_nums[@]}
+        for run in "${run_nums[@]}"
         do
-            for T in ${temps[@]}
+            for T in "${temps[@]}"
             do
                 runpref="prod-T${T}"
                 folder="${dftype}-0${run}/${runpref}"
@@ -33,7 +33,7 @@ if [ $compounded -eq "true" ]; then
 
                 runtime=$(( 60 * 24 ))  # In minutes
 
-                restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
+                restartfile=$(ls -t final-${runpref}.*.restart | head -n 1 2>/dev/null)
                 if [ -e "${restartfile}" ]; then
                     filein="input-restart-${runpref}.lmp"
                     sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
