@@ -3,7 +3,7 @@
     "run_indices" : [0, 1, 2],
     "step_size" : 8,
     "step_count" : 100000,
-    "temperature" : "XXXTEMPXXX",
+    "temperature" : [200],
     "output_name" : "XXXOUTPREFXXX",
     "pdb_input_name" : "XXXPDBNAMEXXX",
     "pdb_sizes" : [64, 96, 128]

@@ -32,7 +32,7 @@ do
         fi
 
         sed -e "s|XXXPDBNAMEXXX|${pdbname}|g"   \
-            -e "s|XXXTEMPXXX|${T}|g"            \
+            -e "s|\"temperature\" : .*,|\"temperature\" : ${T},|g"   \
             -e "s|XXXOUTPREFXXX|${outpref}|g"   \
             "${templates_dir}/size-convergence.json" > "${templates_dir}/temp.json"
 
