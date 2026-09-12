@@ -9,11 +9,13 @@ acct=$( pwd | awk -F'/' '{print $(NF-5)}')
 if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
 #Get defect types and run numbers from json file
-jsonfile="${execdir}/templates/production-serial.json"
-compounded=$(jq -r '.style' "${jsonfile}")
+jsonfile="${execdir}/templates/production.json"
+compounded=$(jq -r '.compounded' "${jsonfile}")
 mapfile -t temps < <(jq -r '.temperature[]' "${jsonfile}")
 mapfile -t dftypes < <(jq -r '.defect_types[]' "${jsonfile}")
 mapfile -t run_nums < <(jq -r '.run_indices[]' "${jsonfile}")
+
+echo "Running compounded: $compounded"
 
 if [ $compounded == "true" ]; then
     for dftype in "${dftypes[@]}"

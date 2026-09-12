@@ -18,7 +18,7 @@ import json
 
 if args.from_file == None:
     #Run parameters
-    runtypes = ['p0m1', 'p1m0', 'p1m1']
+    runtypes = ['p0m1', 'p1m0', 'p0m0']
     run_nums = np.arange(5)
 
     step_size = 8   #4fs between frames
