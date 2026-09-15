@@ -15,9 +15,9 @@ temps=$(jq -r '.temperature[]' "${templates_dir}/size-convergence.json")
 pdb_exts=$(jq -r '.pdb_sizes[]' "${templates_dir}/size-convergence.json")
 
 
-for T in ${temps[*]}
+for T in "${temps[*]}"
 do
-    for pdbin in ${pdb_exts[*]}
+    for pdbin in "${pdb_exts[*]}"
     do
 
         # Output file name
