@@ -16,13 +16,15 @@ dftypes=$(jq -r '.defect_types[]' "${execdir}/templates/size-convergence.json")
 run_nums=$(jq -r '.run_indices[]' "${execdir}/templates/size-convergence.json")
 sizes=$(jq -r '.pdb_sizes[]' "${execdir}/templates/size-convergence.json")
 
-for dftype in ${dftypes}
+for dftype in "${dftypes}"
 do
-    for run in ${run_nums}
+    for run in "${run_nums}"
     do
-        for T in ${temps}
+        for T in "${temps}"
         do
-            runpref="prod-T${T}"
+            for s in "${sizes}"
+            runpref="conv-T${T}-N${s}"
+
             folder="${dftype}-0${run}/${runpref}"
             echo "Running ${runpref} from ${folder}"
 
