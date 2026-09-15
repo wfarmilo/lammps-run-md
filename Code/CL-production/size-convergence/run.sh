@@ -23,36 +23,38 @@ do
         for T in "${temps}"
         do
             for s in "${sizes}"
-            runpref="conv-T${T}-N${s}"
+            do
+                runpref="conv-T${T}-N${s}"
 
-            folder="${dftype}-0${run}/${runpref}"
-            echo "Running ${runpref} from ${folder}"
+                folder="${dftype}-0${run}/${runpref}"
+                echo "Running ${runpref} from ${folder}"
 
-            # Change to work directory
-            workdir=$(realpath "./out/${folder}") || exit 1
+                # Change to work directory
+                workdir=$(realpath "./out/${folder}") || exit 1
 
-            cd $workdir || exit 1
+                cd $workdir || exit 1
 
-            runtime=$(( 60 * 24 ))  # In minutes
+                runtime=$(( 60 * 24 ))  # In minutes
 
-            restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
-            if [ -e "${restartfile}" ]; then
-                filein="input-restart-${runpref}.lmp"
-                sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
-            else
-                filein="input-${runpref}.lmp"
-            fi
+                restartfile=$(ls -t final-${runpref}.*.restart | head -n 1)
+                if [ -e "${restartfile}" ]; then
+                    filein="input-restart-${runpref}.lmp"
+                    sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
+                else
+                    filein="input-${runpref}.lmp"
+                fi
 
 
-            sbatch  --time=$runtime     \
-                    --qos=taskfarm      \
-                    --account=${acct}   \
-                    --output="${workdir}/slurm.log" \
-                    --job-name="${folder}"          \
-                    "${execdir}/templates/submit.sh" ${filein} ${runtime}
+                sbatch  --time=$runtime     \
+                        --qos=taskfarm      \
+                        --account=${acct}   \
+                        --output="${workdir}/slurm.log" \
+                        --job-name="${folder}"          \
+                        "${execdir}/templates/submit.sh" ${filein} ${runtime}
 
-            #Return to starting directory
-            cd "${execdir}"
+                #Return to starting directory
+                cd "${execdir}"
+            done
         done
     done
 done
