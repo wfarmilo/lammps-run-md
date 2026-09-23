@@ -8,6 +8,9 @@ Data/
 #Model json file
 ch2o-dens-inv_swa-1-8.json
 
+#Cleanup scripts
+reset-*
+
 #Archer2 export/import files
 push-archer2.sh
 pull-archer2.sh
