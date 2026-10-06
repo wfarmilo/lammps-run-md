@@ -28,12 +28,12 @@ fix NVT1 all nvt temp XXXTEMPXXX XXXTEMPXXX 0.05
 ############## File outputs ###############
 
 #Open stream for trajectory output
-dump DUMP1 all dcd XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.dcd
+dump DUMP1 all extxyz XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.dcd
 
     # dump LABEL TARGET FILETYPE STEPSIZE FILENAME
     # LABEL: internal name for this dump
     # TARGET: which group to perform the dump on
-    # FILETYPE: type of file to output (here .dcd)
+    # FILETYPE: type of file to output (here .extxyz)
     # STEPSIZE: the frequency of dumps, expressed in frames
     # FILENAME: the output name for the dump file
 
