@@ -42,8 +42,8 @@ dump DUMP1 all custom XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.lammpstrj id type elemen
         # element: the actual element name (H or O)
         # xu, yu, zu: the UNWRAPPED x,y,z coordinates, which lie outside the periodic box
 
-# Sort trajectory by atom id, and append to existing file
-dump_modify DUMP1 sort id append yes
+# Sort trajectory by atom id, attach proper elements, and append to existing file
+dump_modify DUMP1 sort id element H O append yes
 
 # Checkpoint data throughout the simulation (cycles between a and b in case of mid-write crash)
 restart 10000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart
