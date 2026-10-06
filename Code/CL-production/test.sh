@@ -1,47 +1,6 @@
 #!/bin/bash
 
-# Directory check
-cd ../../Code/CL-production/ || exit 1
-execdir=$(realpath "./")
-
-# Get project account from directory name
-acct=$( pwd | awk -F'/' '{print $(NF-5)}')
-if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
-
-#Get defect types and run numbers from json file
-temps=$(jq -r '.temperature[]' "${execdir}/templates/production.json")
-dftypes=$(jq -r '.defect_types[]' "${execdir}/templates/production.json")
-run_nums=$(jq -r '.run_indices[]' "${execdir}/templates/production.json")
-
-dftype=p0m1
-run=0
-T=200
-
-######################## setup.sh #################################
-
-if false; then	##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-# Check directory
-cd ../../Code/CL-production || exit 1
-source /work/e898/shared/waf25/.venv/bin/activate
-
-current_dir=$(realpath ".")
-templates_dir="${current_dir}/templates"
-
-outpref="prod-T${T}"
-
-# Replace json values for setup.py
-sed -e "s|XXXOUTPREFXXX|${outpref}|g"                    \
-    -e "s|\"temperature\" : .*,|\"temperature\" : ${T},|g"   \
-    "${templates_dir}/production.json" > "${templates_dir}/temp.json"
-
-python setup.py 0 -ff "${templates_dir}/temp.json"
-
-rm "${templates_dir}/temp.json"
-
-fi ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-########################## run.sh #################################
+################### setup for fake run ###################
 
 # Directory check
 cd ../../Code/CL-production/ || exit 1
@@ -54,6 +13,8 @@ if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 dftype=p0m1
 run=0
 T=200
+
+############ run.sh execution line starts here ############
 
 runpref="prod-T${T}"
 folder="${dftype}-0${run}/${runpref}"
@@ -64,9 +25,16 @@ workdir=$(realpath "./out/${folder}") || exit 1
 
 cd $workdir || exit 1
 
-runtime=20  # In minutes
+runtime=$(( 20 ))  # In minutes
 
-filein="input-${runpref}.lmp"
+restartfile=$(ls -t final-${runpref}.*.restart | head -n 1 2>/dev/null)
+if [ -e "${restartfile}" ]; then
+    filein="input-restart-${runpref}.lmp"
+    sed -i "s|read_restart .*|read_restart ${restartfile}|g" "${filein}"
+else
+    filein="input-${runpref}.lmp"
+fi
+
 
 sbatch  --time=$runtime \
         --qos=short \
