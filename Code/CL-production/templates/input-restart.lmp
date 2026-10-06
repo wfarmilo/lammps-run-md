@@ -28,20 +28,22 @@ fix NVT1 all nvt temp XXXTEMPXXX XXXTEMPXXX 0.05
 ############## File outputs ###############
 
 #Open stream for trajectory output
-dump DUMP1 all extxyz XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.dcd
+dump DUMP1 all custom XXXSTEPSIZEXXX traj-XXXOUTPREFXXX.lammpstrj id type element xu yu zu
 
-    # dump LABEL TARGET FILETYPE STEPSIZE FILENAME
+    # dump LABEL TARGET FILETYPE STEPSIZE FILENAME columns
     # LABEL: internal name for this dump
     # TARGET: which group to perform the dump on
-    # FILETYPE: type of file to output (here .extxyz)
+    # STYLE: type of file to output (here custom for unwrapped positions)
     # STEPSIZE: the frequency of dumps, expressed in frames
     # FILENAME: the output name for the dump file
+    # columns: what to put in each column. Here, we use:
+        # id: atom index (useful to preserve order)
+        # type: internal LAMMPS atom type (here 1 -> H, 2 -> O)
+        # element: the actual element name (H or O)
+        # xu, yu, zu: the UNWRAPPED x,y,z coordinates, which lie outside the periodic box
 
-# Unwrap trajectory- so that particles are not confined to the periodic cell (for diffusion)
-dump_modify DUMP1 unwrap yes
-
-# Append to existing dump
-dump_modify DUMP1 append yes
+# Sort trajectory by atom id, and append to existing file
+dump_modify DUMP1 sort id append yes
 
 # Checkpoint data throughout the simulation (cycles between a and b in case of mid-write crash)
 restart 10000 chkpt-XXXOUTPREFXXX.a.restart chkpt-XXXOUTPREFXXX.b.restart
