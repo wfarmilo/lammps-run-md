@@ -285,6 +285,11 @@ def convert(rundir, apply, force):
         m = re.fullmatch(rf"final-{re.escape(prefix)}\.(\d+)\.restart", p.name)
         if m:
             finals[p] = int(m.group(1))
+    # A restart beyond the DCD's end means a later job truncated the DCD (fresh dump file)
+    beyond = sorted(r for r in finals.values() if r >= last_abs + nsavc)
+    if beyond:
+        raise ValueError(f"{rundir}: restart step(s) {beyond} lie beyond the DCD's last frame "
+                         f"{last_abs}; the DCD was probably overwritten by a later run")
     matches = [p for p, r in finals.items() if last_abs <= r < last_abs + nsavc]
     if len(matches) != 1:
         raise ValueError(f"{rundir}: need exactly one final restart with step in "
