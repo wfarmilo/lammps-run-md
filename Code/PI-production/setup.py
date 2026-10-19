@@ -23,7 +23,7 @@ Nt = runparams["step_count"]
 temperature = runparams["temperature"]
 pimd_type = runparams["PIMD_type"]
 nbeads = runparams["num_beads"]
-outprefix = runparams["output_name"]
+template_outprefix = runparams["output_name"]
 pdbinput = runparams["pdb_input_name"]
 modelname = runparams["MACE_model"]
 
@@ -41,7 +41,7 @@ for rt in runtypes:
         for T, P in zip(temperature, nbeads):
 
             # Swap in run parameters to outprefix
-            outprefix = outprefix.replace("XXXTEMPXXX", f"{T}")
+            outprefix = template_outprefix.replace("XXXTEMPXXX", f"{T}")
             outprefix = outprefix.replace("XXXNBEADSXXX", f"{P}")
 
             #Make output directory (if necessary)
@@ -65,7 +65,7 @@ for rt in runtypes:
                     #Symlink output directory to pair in Data/out/PI-production-out
                     os.symlink(workdir, link_dir, target_is_directory=True)
             else:
-                raise Exception(f"Directory {str(workdir)} exists")
+                print(f"Directory {str(workdir)} exists")
 
             #Get pdb file
             pdbname = pdbinput.replace('XXXDFXXX', f"{rt}-{rn:02d}")

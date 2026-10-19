@@ -8,12 +8,11 @@ execdir=$(realpath "./")
 acct=$( pwd | awk -F'/' '{print $(NF-4)}')
 if [[ "${acct}" == "e89" ]]; then acct="e89-camp"; fi
 
-dftype=$1
-temp=$2
-pitype=$3
-nbeads=$4
+dftype=p0m1
+temp=300
+nbeads=32
 
-runpref="${pitype}-T${temp}-P${nbeads}"
+runpref="prod-T${temp}-P${nbeads}"
 folder="${dftype}-00/${runpref}"
 echo "Running ${runpref} from ${folder}"
 
