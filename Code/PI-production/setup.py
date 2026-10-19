@@ -1,14 +1,7 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-
-parser.add_argument("temp", help = "Simulation temperature", type = int)
-parser.add_argument("ipi_type", help = "Style of PIMD", type = str)
-parser.add_argument("bead_count", help = "Number of PIMD beads", type = int)
-parser.add_argument("-o", "--output", help="Name of output type directory (defaults to PIMD-TXXX-PYY)")
-parser.add_argument("-i", "--input", default = 'XXXDFXXX', help="Name of input pdb file from Data/input-pdb (defaults to pXmY-ZZ.pdb). Will replace string XXXDFXXX with pXmY-ZZ.")
-parser.add_argument("-q", "--quantity", help="Number of runs to do", default = 5, type = int)
-parser.add_argument("-ff", "--from_file", help = "Read all run parameters from a file")
+parser.add_argument("template_file", help = "Read all run parameters from a file")
 args=parser.parse_args()
 
 
@@ -18,136 +11,128 @@ import numpy as np
 from ase.io import read as aread, write as awrite
 import json
 
-if args.from_file == None:
-    #Run parameters
-    runtypes = ['p0m1', 'p1m0', 'p1m1']
-    run_nums = np.arange(args.quantity)
+#Read from json file
+with open(args.template_file) as f:
+    runparams = json.loads(f.read())
 
-    step_size = 16      # 4fs between frames
-    Nt = 1000000        # 500ps of data
-    temperature = args.temp
-    pimd_type = args.ipi_type
-    P = args.bead_count
-    outprefix = f'{pimd_type}-T{temperature}-P{P}' if args.output == None else args.output
-    pdbinput = args.input
+runtypes = runparams["defect_types"]
+run_nums = runparams["run_indices"]
 
-else:
-    #Read from json file
-    with open(args.from_file) as f:
-        runparams = json.loads(f.read())
-
-    runtypes = runparams["defect_types"]
-    run_nums = runparams["run_indices"]
-
-    step_size = runparams["step_size"]
-    Nt = runparams["step_count"]
-    temperature = int(runparams["temperature"])
-    pimd_type = runparams["PIMD_type"]
-    P = int(runparams["num_beads"])
-    outprefix = runparams["output_name"]
-    pdbinput = runparams["pdb_input_name"]
+step_size = runparams["step_size"]
+Nt = runparams["step_count"]
+temperature = runparams["temperature"]
+pimd_type = runparams["PIMD_type"]
+nbeads = runparams["num_beads"]
+outprefix = runparams["output_name"]
+pdbinput = runparams["pdb_input_name"]
+modelname = runparams["MACE_model"]
 
 
 cwd = Path("./").resolve()
 assert cwd.name == "PI-production", f"Wrong directory: {str(cwd)}"
 data_dir = cwd.parents[1] /"Data"
 templates_dir = cwd / "templates"
-model_path = "/work/e898/shared/waf25/mace-models/ch2o-dens-inv_swa-1-8.json"
+model_path = f"/work/e898/shared/waf25/mace-models/{modelname}"
 
-#Set up output directories for classical production run
+#Set up output directories for PIMD production run
 
 for rt in runtypes:
     for rn in run_nums:
+        for T, P in zip(temperature, nbeads):
 
-        #Make output directory (if necessary)
-        workdir = cwd /  f"out/{rt}-{rn:02d}/{outprefix}"
+            # Swap in run parameters to outprefix
+            outprefix = outprefix.replace("XXXTEMPXXX", f"{T}")
+            outprefix = outprefix.replace("XXXNBEADSXXX", f"{P}")
 
-        print(f"Making directory {str(workdir.absolute())}")
+            #Make output directory (if necessary)
+            workdir = cwd /  f"out/{rt}-{rn:02d}/{outprefix}"
 
-        if not(workdir.exists()):
-            workdir.mkdir(parents=True)
-            workdir.chmod(0o755)
+            print(f"Making directory {str(workdir.absolute())}")
 
-            #Check that the output directory is linked up
-            data_parent = data_dir / f"out/PI-production-out/{rt}-{rn:02d}"
-            if not(data_parent.exists()):
-                data_parent.mkdir(parents=True)
-                data_parent.chmod(0o755)
+            if not(workdir.exists()):
+                workdir.mkdir(parents=True)
+                workdir.chmod(0o755)
 
-            link_dir = data_parent / f"{outprefix}"
+                #Check that the output directory is linked up
+                data_parent = data_dir / f"out/PI-production-out/{rt}-{rn:02d}"
+                if not(data_parent.exists()):
+                    data_parent.mkdir(parents=True)
+                    data_parent.chmod(0o755)
 
-            if not(link_dir.is_symlink()):
-                #Symlink output directory to pair in Data/out/PI-production-out
-                os.symlink(workdir, link_dir, target_is_directory=True)
-        else:
-            raise Exception(f"Directory {str(workdir)} exists")
+                link_dir = data_parent / f"{outprefix}"
 
-        #Get pdb file
-        pdbname = pdbinput.replace('XXXDFXXX', f"{rt}-{rn:02d}")
-        pdbin = data_dir /  f"input-pdb/{pdbname}.pdb"
+                if not(link_dir.is_symlink()):
+                    #Symlink output directory to pair in Data/out/PI-production-out
+                    os.symlink(workdir, link_dir, target_is_directory=True)
+            else:
+                raise Exception(f"Directory {str(workdir)} exists")
 
-        print(f"Creating inputs from {str(pdbin.absolute())}")
+            #Get pdb file
+            pdbname = pdbinput.replace('XXXDFXXX', f"{rt}-{rn:02d}")
+            pdbin = data_dir /  f"input-pdb/{pdbname}.pdb"
 
-        #Read in pdb file
-        atoms = aread(pdbin)
+            print(f"Creating inputs from {str(pdbin.absolute())}")
 
-        #Output in lammps form
-        awrite(workdir / "initconf.data", 
-               atoms, 
-               format = "lammps-data", 
-               atom_style = "atomic", 
-               specorder = ["H", "O"], 
-               masses = True)
+            #Read in pdb file
+            atoms = aread(pdbin)
 
-        #Get lammps input
-        lammps_inp = templates_dir / "input.lmp"
+            #Output in lammps form
+            awrite(workdir / "initconf.data", 
+                atoms, 
+                format = "lammps-data", 
+                atom_style = "atomic", 
+                specorder = ["H", "O"], 
+                masses = True)
 
-        #Get ipi input
-        ipi_inp = templates_dir / f"{pimd_type}.xml"
+            #Get lammps input
+            lammps_inp = templates_dir / "input.lmp"
 
-        edit_inputs = [lammps_inp, ipi_inp]
-        inptext = ['', '']
-        for ini, inp in enumerate(edit_inputs):
-            with open(inp, "r") as ii:
-                inptext[ini] = ii.read()
+            #Get ipi input
+            ipi_inp = templates_dir / f"{pimd_type}.xml"
 
-            #Swap out placeholders
+            edit_inputs = [lammps_inp, ipi_inp]
+            inptext = ['', '']
+            for ini, inp in enumerate(edit_inputs):
+                with open(inp, "r") as ii:
+                    inptext[ini] = ii.read()
 
-            #Global
-            inptext[ini] = inptext[ini].replace(f"XXXTEMPXXX", f"{temperature}")
-            inptext[ini] = inptext[ini].replace(f"XXXOUTPREFXXX", outprefix)
-            inptext[ini] = inptext[ini].replace(f"XXXNSTEPSXXX", f"{Nt}")
+                #Swap out placeholders
 
-            #LAMMPS input file
-            inptext[ini] = inptext[ini].replace(f"XXXSTEPSIZEXXX", f"{step_size}")
-            inptext[ini] = inptext[ini].replace(f"XXXMODELPATHXXX", str(model_path))
+                #Global (only ipi at this point)
+                inptext[ini] = inptext[ini].replace(f"XXXTEMPXXX", f"{T}")
+                inptext[ini] = inptext[ini].replace(f"XXXOUTPREFXXX", outprefix)
+                inptext[ini] = inptext[ini].replace(f"XXXNSTEPSXXX", f"{Nt}")
 
-            #ipi input file
-            inptext[ini] = inptext[ini].replace(f"XXXPROPSTRIDEXXX", f"{100*step_size}")
-            inptext[ini] = inptext[ini].replace(f"XXXTRAJSTRIDEXXX", f"{step_size}")
-            inptext[ini] = inptext[ini].replace(f"XXXCHECKPTSTRIDEXXX", f"{step_size}")
-            inptext[ini] = inptext[ini].replace(f"XXXNBEADSXXX", f"{P}")
+                #LAMMPS input file
+                inptext[ini] = inptext[ini].replace(f"XXXSTEPSIZEXXX", f"{step_size}")
+                inptext[ini] = inptext[ini].replace(f"XXXMODELPATHXXX", str(model_path))
 
-        #Copy over pdb file (and reformat for i-pi)
-        with open(pdbin, "r") as fpdb:
-            pdb_lines = fpdb.readlines()
+                #ipi input file
+                inptext[ini] = inptext[ini].replace(f"XXXPROPSTRIDEXXX", f"{100*step_size}")
+                inptext[ini] = inptext[ini].replace(f"XXXTRAJSTRIDEXXX", f"{step_size}")
+                inptext[ini] = inptext[ini].replace(f"XXXCHECKPTSTRIDEXXX", f"{step_size}")
+                inptext[ini] = inptext[ini].replace(f"XXXNBEADSXXX", f"{P}")
 
-        #Filter out MODEL and ENDMDL
-        filtered = [line for line in pdb_lines if not(line.startswith("MODEL")) and not(line.startswith("ENDMDL"))]
+            #Copy over pdb file (and reformat for i-pi)
+            with open(pdbin, "r") as fpdb:
+                pdb_lines = fpdb.readlines()
 
-        with open(workdir / "initconf.pdb", "w") as pdbo:
-            #Add title line
-            pdbo.write(f"TITLE <{rt}-{rn:02d}>" + r"position{angstrom} cell{angstrom}" + '\n')
+            #Filter out MODEL and ENDMDL
+            filtered = [line for line in pdb_lines if not(line.startswith("MODEL")) and not(line.startswith("ENDMDL"))]
 
-            pdbo.writelines(filtered)
+            with open(workdir / "initconf.pdb", "w") as pdbo:
+                #Add title line
+                pdbo.write(f"TITLE <{rt}-{rn:02d}>" + r"position{angstrom} cell{angstrom}" + '\n')
+
+                pdbo.writelines(filtered)
 
 
-        #Save lammps input
-        lammps_inp_out = workdir / f"input-{outprefix}.lmp"
-        with open(lammps_inp_out, "w") as lio:
-            lio.write(inptext[0])
+            #Save lammps input
+            lammps_inp_out = workdir / f"input-{outprefix}.lmp"
+            with open(lammps_inp_out, "w") as lio:
+                lio.write(inptext[0])
 
-        #Save ipi input
-        ipi_inp_out = workdir / f"input-{outprefix}.xml"
-        with open(ipi_inp_out, "w") as iio:
-            iio.write(inptext[1])
+            #Save ipi input
+            ipi_inp_out = workdir / f"input-{outprefix}.xml"
+            with open(ipi_inp_out, "w") as iio:
+                iio.write(inptext[1])

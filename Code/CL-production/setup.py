@@ -40,12 +40,13 @@ else:
     temperature = int(runparams["temperature"])
     outprefix = runparams["output_name"]
     pdbinput = runparams["pdb_input_name"]
+    model_name = runparams["MACE_model"]
 
 cwd = Path("./").resolve()
 assert cwd.name == "CL-production", f"Wrong directory: {str(cwd)}"
 data_dir = cwd.parents[1] /"Data"
 templates_dir = cwd / "templates"
-model_path = "/work/e898/shared/waf25/mace-models/ch2o-dens-inv_swa-1-8.json"
+model_path = f"/work/e898/shared/waf25/mace-models/{model_name}"
 
 
 #Set up output directories for classical production run

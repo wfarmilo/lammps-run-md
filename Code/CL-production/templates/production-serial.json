@@ -45,5 +45,6 @@
     "step_size" : 8,
     "step_count" : 4000000,
     "output_name" : "XXXOUTPREFXXX",
-    "pdb_input_name" : "XXXDFXXX"
+    "pdb_input_name" : "XXXDFXXX",
+    "MACE_model" : "ch2o-dens-inv_swa-1-8.json"
 }

@@ -7,5 +7,6 @@
     "PIMD_type" : "XXXPIMDTYPEXXX",
     "num_beads" : "XXXNBEADSXXX",
     "output_name" : "XXXOUTPREFXXX",
-    "pdb_input_name" : "XXXDFXXX-N64"
+    "pdb_input_name" : "XXXDFXXX-N64",
+    "MACE_model" : "ch2o-dens-inv_swa-1-8.json"
 }

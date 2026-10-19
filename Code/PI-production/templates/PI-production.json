@@ -1,0 +1,12 @@
+{
+    "defect_types" : ["p0m1", "p1m0"],
+    "run_indices" : [0, 1, 2],
+    "step_size" : 16,
+    "step_count" : 100000,
+    "temperatures" : [300, 250, 200],
+    "PIMD_type" : "PILE",
+    "num_beads" : [32, 48, 64],
+    "output_name" : "prod-TXXXTEMPXXX-PXXXNBEADSXXX",
+    "pdb_input_name" : "XXXDFXXX",
+    "MACE_model" : "ch2o-dens-inv_swa-1-8.json"
+}
