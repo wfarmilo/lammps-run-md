@@ -19,3 +19,4 @@ __pycache__/
 push-archer2.sh
 pull-archer2.sh
 pull-all-archer2.sh
+pull-CL-archer2.sh
