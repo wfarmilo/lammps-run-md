@@ -15,36 +15,10 @@ read_data   ./initconf.data     # Read in configuration from input file (MUST be
 pair_style    symmetrix/mace            # Style of model we are using
 pair_coeff    * * XXXMODELPATHXXX H O   # Assign atom type 1 to H and 2 to O, then use coefficients from symmetrix .json output
 
-########## Set up run parameters ###########
-timestep 0.0005         # Timestep between simulation frames (NOTE: units metal -> this is in ps)
-
-# Initialize velocity distribution
-velocity all create XXXTEMPXXX 31415 dist gaussian      # NOTE: will by default set the linear COM momentum to 0 (mom yes)
-
-    # velocity TARGET create TEMP SEED dist DISTRIBUTION
-    # TARGET: which group to apply the velocity to
-    # create: tells you to create a new velocity distribution
-    # TEMP: corresponding temperature for this velocity
-    # SEED: seed for random number generator they use
-    # dist: flag for lammps to provide a custom distribution (default is uniform)
-    # DISTRIBUTION: the type of distribution you want (here we use a gaussian)
-
-# Create NVT thermostat
-fix NVT1 all nvt temp XXXTEMPXXX XXXTEMPXXX 0.05
-
-    # fix LABEL TARGET nvt temp TSTART TFINAL TDAMP
-    # LABEL: internal name for this fix
-    # TARGET: which group to perform the fix on
-    # nvt: the thermostat to use, here using Nose-Hoover chain (default chain length tchain 3)
-    # temp: flag that tells LAMMPS you are providing temperature arguments
-    # TSTART: initial temperature (units metal -> K)
-    # TFINAL: final temperature (units metal -> K)
-    # TDAMP: the thermostap damping temperature (generally 100xtimestep, again, this will be in ps)
-
-############## File outputs ###############
+############## Run parameters ###############
 
 # Attach to ipi node (fix NAME TARGET i-pi SOCKETID PORT)
 fix IPI1 all ipi XXXNIDXXX 31415
 
-# Run simulation- run NFRAMES (here should be 500ps worth)
-run XXXNSTEPSXXX
+# Then, all run parameters (e.g. thermostat, initial velocities, etc.) as well
+# as file outputs are handled directly by whatever is in the XML input.

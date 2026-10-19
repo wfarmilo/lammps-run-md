@@ -4,10 +4,8 @@
 cd ../../PI-production/bead-convergence || exit 1
 source /work/e898/shared/waf25/.venv/bin/activate
 
-# Switch to PI-production parent dir
-cd ..
-
-current_dir=$(realpath ".")
+# Set to PI-production parent dir
+current_dir=$(realpath "..")
 templates_dir="${current_dir}/templates"
 
 # Create temporary run parameters
